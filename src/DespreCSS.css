@@ -1,0 +1,49 @@
+body{
+ margin: 0;
+ padding: 0;
+ background: url(login-background.jpg);
+ background-size: cover;
+ background-position: center;
+ font-family: sans-serif;
+}
+.despre-box{
+ width: 340px;
+ height: 420px;
+ background: rgba(0,0,0,0.5);
+ color: #fff;
+ top: 50%;
+ left: 50%;
+ position: absolute;
+ transform: translate(-50%,-50%);
+ box-sizing: border-box;
+ padding: 100px 500px;
+}
+.logo{
+ width: 150px;
+ height: 150px;
+ border-radius: 50%;
+ position: absolute;
+ top:-50px;
+ left: calc(50% - 100px);
+}
+.logo_home{
+ width: 50px;
+ position: relative;
+ left: -45px;
+}
+h1{
+ margin-bottom: 10px;
+ margin-left: -380px;
+ margin-right: -400px;
+ padding: 0;
+ font-size: 22px;
+ font-family: cursive;
+}
+p{
+ margin-bottom: 10px;
+ margin-left: -380px;
+ margin-right: -400px;
+ padding: 0;
+ font-size: 20px;
+ font-family: sans-serife;
+}

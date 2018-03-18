@@ -64,3 +64,8 @@ h1{
 .login-box a:hover{
  color: #39dc79;
 }
+.logo_home{
+ width: 50px;
+ position: absolute;
+ padding-left: 30%;
+}
