@@ -6,7 +6,7 @@
 body {
     font-family: Arial, Helvetica, sans-serif;
     margin: 0;
-    background:url(tapet.jpg) ;
+    background-color: #dddddd ;
     background-size: cover;
     backgroung-positioon: center;
     background-attachment: fixed;
@@ -79,20 +79,43 @@ body {
     color: white;
 }
 
-.image{
-    width: 700px;
-    height: 500px;
-    padding: 40px;
-    padding-left: 70px;
-    float: left;
+
+
+
+
+/* Column container */
+.row {
+    display: flex;
+    flex-wrap: wrap;
+    padding: 50px;
+    padding-left:150px;
+    padding-right: 150px;
+}
+
+/* Create two unequal columns that sits next to each other */
+/* Sidebar/left column */
+.side {
+    flex: 200px;
+    background-color: blanchedalmond;
+    padding: 20px;
+}
+
+/* Main column */
+.main {
+    flex: 600px;
+    background-color: white;
+    padding: 20px;
+}
+.main img{
+    width: 600px;
+    height: 300px;
+    padding: 20px;
+    padding-left: 25%;
     opacity: 1;
+    position: center;
 
 }
 
-img:hover {
-    opacity: 0.5;
-    filter: alpha(opacity=50);
-}
 
 
 
