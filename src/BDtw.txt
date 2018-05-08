@@ -1,0 +1,53 @@
+CREATE TABLE users (
+  id INT NOT NULL PRIMARY KEY,
+  email VARCHAR2(60) NOT NULL,
+  password VARCHAR2(30) NOT NULL,
+  alimentatie VARCHAR2(30),
+  post BOOLEAN DEFAULT FALSE,
+  admin BOOLEAN DEFAULT FALSE;
+)
+/
+
+CREATE TABLE retete (
+  id INT NOT NULL PRIMARY KEY,
+  nume VARCHAR2(100) NOT NULL,
+  descriere VARCHAR2(2000) NOT NULL,
+  ingrediente VARCHAR2(1000) NOT NULL,
+  post BOOLEAN DEFAULT FALSE,
+  nivel NUMBER(1),
+  timp NUMBER(3)
+)
+/
+
+CREATE TABLE boliUsers (
+  id INT NOT NULL PRIMARY KEY,
+  id_user INT NOT NULL,
+  nume VARCHAR2(50) NOT NULL,
+  CONSTRAINT fk_boliUsers_id_user FOREIGN KEY (id_user) REFERENCES users(id)
+)
+/
+
+CREATE TABLE boliRetete (
+  id INT NOT NULL PRIMARY KEY,
+  id_reteta INT NOT NULL,
+  nume VARCHAR2(50) NOT NULL,
+  CONSTRAINT fk_boliRetete_id_reteta FOREIGN KEY (id_reteta) REFERENCES retete(id)
+)
+/
+
+CREATE TABLE logati (
+  token VARCHAR2(50) NOT NULL PRIMARY KEY,
+  id_user INT NOT NULL,
+  CONSTRAINT fk_logati_id_user FOREIGN KEY (id_user) REFERENCES users(id)
+)
+/
+
+CREATE TABLE comentarii (
+  id INT NOT NULL PRIMARY KEY,
+  id_user INT NOT NULL,
+  id_reteta INT NOT NULL,
+  descriere VARCHAR2(2000) NOT NULL,
+  CONSTRAINT fk_comentarii_id_user FOREIGN KEY (id_user) REFERENCES users(id),
+  CONSTRAINT fk_comentarii_id_reteta FOREIGN KEY (id_reteta) REFERENCES retete(id) 
+)
+/
