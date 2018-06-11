@@ -6,10 +6,21 @@ let post = document.getElementById('post');
 
 let register = document.getElementById('register');
 
+let boli=document.getElementById('boli');
+
 register.onclick = event => {
     event.preventDefault();
 
     register.setAttribute('disabled', 'disabled');
+    
+    let boliarray = [];
+
+    for (let index = 0; index < boli.selectedOptions.length; index++) {
+        const element = boli.selectedOptions[index];
+    
+        boliarray.push(element.value);
+    }
+    
 
     if (email.value !== '' && password.value !== '' && password2.value !== '' && alimentatie.value !== '' && post.value !== '' && password.value === password2.value) {
         function reqListener() {
@@ -38,8 +49,10 @@ register.onclick = event => {
             email: email.value,
             password: password.value,
             alimentatie: alimentatie.value,
-            post: post.value
+            post: post.value,
+            boli: boliarray
         }
+        
 
         // send it off!
         ajax.send(JSON.stringify(data));

@@ -14,15 +14,49 @@ let main = (req, res) => {
         var cookie = cookies.get('userToken');
 
         if (cookie) {
-            fs.readFile(__dirname + '/views/home/home-log.html', 'utf8', function (err, text) {
+            var con = mysql.createConnection({
+                host: "fenrir.info.uaic.ro",
+                user: "TWproject",
+                password: "mNC9o5R03k",
+                database: 'TWproject'
+            });
+            con.connect();
+
+            let getemail = `select email from Logati where token like '${cookie}';`;
+
+            con.query(getemail, function (err, data) {
                 if (err) {
                     throw err;
                 }
 
-                res.writeHead(200, {
-                    'Content-Type': 'text/html'
-                });
-                res.end(text);
+                if (data.length > 0) {
+                    let getadmin = `select admin from Users where email like '${data[0].email}';`;
+                    
+                    con.query(getadmin, function (err, data) {
+                        if (err) {
+                            throw err;
+                        }
+
+                        if (data.length > 0) {
+                            
+                            if (data[0].admin === 0) {
+                                fs.readFile(__dirname + '/views/home/home-log.html', 'utf8', function (err, text) {
+                                    if (err) {
+                                        throw err;
+                                    }
+                    
+                                    res.writeHead(200, {
+                                        'Content-Type': 'text/html'
+                                    });
+                                    res.end(text);
+                                });
+                            } else {
+
+                            }
+                            
+                        }
+                    })
+                }
             });
         } else {
             fs.readFile(__dirname + '/views/home/home.html', 'utf8', function (err, text) {
@@ -129,10 +163,10 @@ let login = (req, res) => {
     if (req.url === '/login' && req.method === 'POST') {
         req.on('data', function (data) {
             var con = mysql.createConnection({
-                host: "localhost",
-                user: "root",
-                password: "",
-                database: 'tw'
+                host: "fenrir.info.uaic.ro",
+                user: "TWproject",
+                password: "mNC9o5R03k",
+                database: 'TWproject'
             });
             con.connect();
 
@@ -195,10 +229,10 @@ let logout = (req, res) => {
 
         if (cookie) {
             var con = mysql.createConnection({
-                host: "localhost",
-                user: "root",
-                password: "",
-                database: 'tw'
+                host: "fenrir.info.uaic.ro",
+                user: "TWproject",
+                password: "mNC9o5R03k",
+                database: 'TWproject'
             });
             con.connect();
 
@@ -253,10 +287,10 @@ let register = (req, res) => {
     if (req.url === '/register' && req.method === 'POST') {
         req.on('data', data => {
             var con = mysql.createConnection({
-                host: "localhost",
-                user: "root",
-                password: "",
-                database: 'tw'
+                host: "fenrir.info.uaic.ro",
+                user: "TWproject",
+                password: "mNC9o5R03k",
+                database: 'TWproject'
             });
             con.connect();
 
@@ -301,10 +335,29 @@ let register = (req, res) => {
                                 }
 
                                 if (data) {
-                                    res.writeHead(200, {
-                                        'Content-Type': 'text/plain'
-                                    });
-                                    res.end('success');
+                                    if (user.boli.length > 0) {
+                                        for (let index = 0; index < user.boli.length; index++) {
+                                            const element = user.boli[index];
+                                            
+                                            let addBoli = `insert into boliUser (nume, email) values ('${element}', '${user.email}');`;
+                                            
+                                            // con.query(addBoli, function (err ,data) {
+                                            //     if (err) {
+                                            //         throw err;
+                                            //     }
+                                            // });
+                                        }
+
+                                        res.writeHead(200, {
+                                            'Content-Type': 'text/plain'
+                                        });
+                                        res.end('success');
+                                    } else {
+                                        res.writeHead(200, {
+                                            'Content-Type': 'text/plain'
+                                        });
+                                        res.end('success');
+                                    }
                                 } else {
                                     res.writeHead(200, {
                                         'Content-Type': 'text/plain'
@@ -313,7 +366,7 @@ let register = (req, res) => {
                                 }
                             });
 
-                            con.end();
+                            
                         } else {
                             res.writeHead(200, {
                                 'Content-Type': 'text/plain'
@@ -358,12 +411,29 @@ let despre = (req, res) => {
     }
 }
 
+let retete = function (req, res) {
+    if (req.url === '/retete' && req.method === 'GET') {
+        fs.readFile(__dirname + '/views/retete/retete.html', 'utf8', function (err, text) {
+            if (err) {
+                throw err;
+            }
+
+            res.writeHead(200, {
+                'Content-Type': 'text/html'
+            });
+            res.end(text);
+        });
+    }
+}
+
 http.createServer((req, res) => {
     assets(req, res);
     login(req, res);
     logout(req, res);
     register(req, res);
     despre(req, res);
+
+    retete(req, res);
 
     main(req, res);
 
