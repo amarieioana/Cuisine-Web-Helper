@@ -8,6 +8,11 @@ var mysql = require('mysql');
 var crypto = require("crypto-js");
 var Cookies = require("cookies");
 
+var Busboy = require('busboy');
+var inspect = require('util').inspect;
+
+var UrlPattern = require('url-pattern');
+
 let main = (req, res) => {
     if (req.url === '/' && req.method === 'GET') {
         var cookies = new Cookies(req, res, null);
@@ -15,14 +20,15 @@ let main = (req, res) => {
 
         if (cookie) {
             var con = mysql.createConnection({
-                host: "fenrir.info.uaic.ro",
-                user: "TWproject",
-                password: "mNC9o5R03k",
-                database: 'TWproject'
+                host: "127.0.0.1",
+                user: "root",
+                password: "password",
+                database: 'tw',
+                insecureAuth : true
             });
             con.connect();
 
-            let getemail = `select email from Logati where token like '${cookie}';`;
+            let getemail = `select email from logati where token like '${cookie}';`;
 
             con.query(getemail, function (err, data) {
                 if (err) {
@@ -30,7 +36,7 @@ let main = (req, res) => {
                 }
 
                 if (data.length > 0) {
-                    let getadmin = `select admin from Users where email like '${data[0].email}';`;
+                    let getadmin = `select * from users where email like '${data[0].email}';`;
                     
                     con.query(getadmin, function (err, data) {
                         if (err) {
@@ -51,9 +57,17 @@ let main = (req, res) => {
                                     res.end(text);
                                 });
                             } else {
-
+                                fs.readFile(__dirname + '/views/home/home-admin.html', 'utf8', function (err, text) {
+                                    if (err) {
+                                        throw err;
+                                    }
+                    
+                                    res.writeHead(200, {
+                                        'Content-Type': 'text/html'
+                                    });
+                                    res.end(text);
+                                });
                             }
-                            
                         }
                     })
                 }
@@ -70,6 +84,131 @@ let main = (req, res) => {
                 res.end(text);
             });
         }
+    }
+
+    if (req.url === '/getAllRetete' && req.method === 'GET') {
+        var con = mysql.createConnection({
+            host: "127.0.0.1",
+            user: "root",
+            password: "password",
+            database: 'tw',
+            insecureAuth : true
+        });
+        con.connect();
+
+        var get = `select * from retete;`;
+
+        var dataToSend = [];
+
+        con.query(get, (err, data) => {
+            if (data.length > 0) {
+                for (let index = 0; index < data.length; index++) {
+                    const element = data[index];
+
+                    var reteta = {
+                        id: element.id,
+                        nume: element.nume,
+                        image: element.image
+                    }
+                    
+                    dataToSend.push(reteta);
+                }
+                
+                var send = {
+                    retete: dataToSend
+                };
+
+                res.writeHead(200, {
+                    'Content-Type': 'text/plain'
+                });
+                res.end(JSON.stringify(send));
+            }
+        });
+    }
+
+    var reteta = new UrlPattern('/reteta/:id');
+
+    if (reteta.match(req.url) && req.method === 'GET') {
+        var cookies = new Cookies(req, res, null);
+        var cookie = cookies.get('userToken');
+
+        if (cookie) {
+            fs.readFile(__dirname + '/views/reteta/reteta.html', 'utf8', function (err, text) {
+                if (err) {
+                    throw err;
+                }
+
+                res.writeHead(200, {
+                    'Content-Type': 'text/html'
+                });
+                res.end(text);
+            });
+        }
+    }
+
+    var retetaGet = new UrlPattern('/reteta/get/:id');
+
+    if (retetaGet.match(req.url) && req.method === 'GET') {
+        var cookies = new Cookies(req, res, null);
+        var cookie = cookies.get('userToken');
+
+        if (cookie) {
+            var con = mysql.createConnection({
+                host: "127.0.0.1",
+                user: "root",
+                password: "password",
+                database: 'tw',
+                insecureAuth : true
+            });
+            con.connect();
+
+            var idReteta = retetaGet.match(req.url).id;
+            
+            var sql = `select * from retete where id = ${idReteta};`;
+
+            con.query(sql, (err, data) => {
+                if (data.length > 0) {
+                    var element = data[0];
+                    var dataToSend = {
+                        nume: element.nume,
+                        descriere: element.descriere,
+                        ingrediente: element.ingrediente,
+                        post: element.post,
+                        nivel: element.nivel,
+                        timp: element.timp,
+                        alimentatie: element.alimentatie,
+                        image: element.image
+                    };
+
+                    var boli = `select nume from boliretete where id_reteta = ${element.id};`;
+
+                    con.query(boli, (err, data) => {
+                        if (data) {
+                            var boliUser = [];
+
+                            for (let index = 0; index < data.length; index++) {
+                                const element = data[index];
+                                
+                                boliUser.push(element.nume);
+                            }
+
+                            var send = {
+                                reteta: dataToSend,
+                                boli: boliUser
+                            };
+
+                            res.writeHead(200, {
+                                'Content-Type': 'text/plain'
+                            });
+                            res.end(JSON.stringify(send));
+                        }
+                    });
+
+                    
+                }
+            });
+        }
+
     }
 }
 
@@ -131,6 +270,20 @@ let assets = (req, res) => {
 
     }
 
+    if (req.url.includes('.jpeg') && req.method === 'GET') {
+        fs.readFile(__dirname + req.url, function (err, text) {
+            if (err) {
+                throw err;
+            }
+
+            res.writeHead(200, {
+                'Content-Type': 'image/jpg'
+            });
+            res.end(text);
+        });
+
+    }
+
     if (req.url.includes('.svg') && req.method === 'GET') {
         fs.readFile(__dirname + req.url, function (err, text) {
             if (err) {
@@ -163,10 +316,11 @@ let login = (req, res) => {
     if (req.url === '/login' && req.method === 'POST') {
         req.on('data', function (data) {
             var con = mysql.createConnection({
-                host: "fenrir.info.uaic.ro",
-                user: "TWproject",
-                password: "mNC9o5R03k",
-                database: 'TWproject'
+                host: "localhost",
+                user: "root",
+                password: "password",
+                database: 'tw',
+                insecureAuth : true
             });
             con.connect();
 
@@ -174,8 +328,8 @@ let login = (req, res) => {
 
             let password = crypto.SHA512(user.password).toString();
 
-            let sql = `select * from Users where email like '${user.email}' and password like '${password}';`;
-
+            let sql = `select * from users where email like '${user.email}' and password like '${password}';`;
+            
             con.query(sql, function (err, data) {
                 if (err) {
                     throw err;
@@ -190,7 +344,7 @@ let login = (req, res) => {
                         maxAge: 1000 * 60 * 60 * 12
                     });
 
-                    let creteLogati = `insert into Logati (token, email) values ('${token}', '${user.email}');`;
+                    let creteLogati = `insert into logati (token, email) values ('${token}', '${user.email}');`;
 
                     con.query(creteLogati, (err, data) => {
                         if (err) {
@@ -229,14 +383,15 @@ let logout = (req, res) => {
 
         if (cookie) {
             var con = mysql.createConnection({
-                host: "fenrir.info.uaic.ro",
-                user: "TWproject",
-                password: "mNC9o5R03k",
-                database: 'TWproject'
+                host: "localhost",
+                user: "root",
+                password: "password",
+                database: 'tw',
+                insecureAuth : true
             });
             con.connect();
 
-            let deleteCookie = `delete from Logati where token like '${cookie}';`;
+            let deleteCookie = `delete from logati where token like '${cookie}';`;
 
             con.query(deleteCookie, function (err, data) {
                 if (err) {
@@ -287,16 +442,17 @@ let register = (req, res) => {
     if (req.url === '/register' && req.method === 'POST') {
         req.on('data', data => {
             var con = mysql.createConnection({
-                host: "fenrir.info.uaic.ro",
-                user: "TWproject",
-                password: "mNC9o5R03k",
-                database: 'TWproject'
+                host: "localhost",
+                user: "root",
+                password: "password",
+                database: 'tw',
+                insecureAuth : true
             });
             con.connect();
 
             let user = JSON.parse(data);
 
-            let varifyEmail = `select * from Users where email like '${user.email}';`;
+            let varifyEmail = `select * from users where email like '${user.email}';`;
 
             con.query(varifyEmail, function (err, data) {
                 if (err) {
@@ -311,8 +467,8 @@ let register = (req, res) => {
                 } else {
                     let password = crypto.SHA512(user.password).toString();
 
-                    let createUser = `insert into Users (email, password, alimentatie, post) values ('${user.email}', '${password}', '${user.alimentatie}', '${user.post}');`;
-
+                    let createUser = `insert into users (email, password, alimentatie, post) values ('${user.email}', '${password}', '${user.alimentatie}', '${user.post}');`;
+                    
                     con.query(createUser, (err, data) => {
                         if (err) {
                             throw err;
@@ -327,8 +483,8 @@ let register = (req, res) => {
                                 maxAge: 1000 * 60 * 60 * 12
                             });
 
-                            let creteLogati = `insert into Logati (token, email) values ('${token}', '${user.email}');`;
-
+                            let creteLogati = `insert into logati (token, email) values ('${token}', '${user.email}');`;
+                            
                             con.query(creteLogati, (err, data) => {
                                 if (err) {
                                     throw err;
@@ -339,13 +495,13 @@ let register = (req, res) => {
                                         for (let index = 0; index < user.boli.length; index++) {
                                             const element = user.boli[index];
                                             
-                                            let addBoli = `insert into boliUser (nume, email) values ('${element}', '${user.email}');`;
+                                            let addBoli = `insert into boliuser (nume, email) values ('${element}', '${user.email}');`;
                                             
-                                            // con.query(addBoli, function (err ,data) {
-                                            //     if (err) {
-                                            //         throw err;
-                                            //     }
-                                            // });
+                                            con.query(addBoli, function (err ,data) {
+                                                if (err) {
+                                                    throw err;
+                                                }
+                                            });
                                         }
 
                                         res.writeHead(200, {
@@ -426,6 +582,159 @@ let retete = function (req, res) {
     }
 }
 
+let adauga = function (req, res) {
+    if (req.url === '/adauga' && req.method === 'GET') {
+        var cookies = new Cookies(req, res, null);
+        var cookie = cookies.get('userToken');
+
+        if (cookie) {
+            var con = mysql.createConnection({
+                host: "127.0.0.1",
+                user: "root",
+                password: "password",
+                database: 'tw',
+                insecureAuth : true
+            });
+            con.connect();
+
+            let getemail = `select email from logati where token like '${cookie}';`;
+
+            con.query(getemail, function (err, data) {
+                if (err) {
+                    throw err;
+                }
+
+                if (data.length > 0) {
+                    let getadmin = `select * from users where email like '${data[0].email}';`;
+                    
+                    con.query(getadmin, function (err, data) {
+                        if (err) {
+                            throw err;
+                        }
+
+                        if (data.length > 0) {
+                            
+                            if (data[0].admin === 1) {
+                                fs.readFile(__dirname + '/views/adauga/adauga.html', 'utf8', function (err, text) {
+                                    if (err) {
+                                        throw err;
+                                    }
+                        
+                                    res.writeHead(200, {
+                                        'Content-Type': 'text/html'
+                                    });
+                                    res.end(text);
+                                });
+                            }
+                        }
+                    });
+                }
+            });
+        }
+    }
+
+    if (req.url === '/adauga' && req.method === 'POST') {
+        var busboy = new Busboy({ headers: req.headers });
+
+        var name = '';
+        var descriere = '';
+        var ingrediente = '';
+        var post = '';
+        var nivel = '';
+        var timp = '';
+        var alimentatie = '';
+        var bolir = [];
+
+        var filePath = '';
+
+        busboy.on('field', function(fieldname, val, fieldnameTruncated, valTruncated, encoding, mimetype) {
+            switch (fieldname) {
+                case 'nume':
+                    name = inspect(val);
+                    break;
+
+                case 'boli[]':
+                bolir.push(inspect(val).split(`'`)[1]);
+                break;
+                
+                case 'descriere':
+                    descriere = inspect(val);
+                    break;
+
+                case 'ingrediente':
+                    ingrediente = inspect(val);
+                    break;
+                
+                case 'post':
+                post = inspect(val);
+                break;
+
+                case 'nivel':
+                nivel = inspect(val);
+                break;
+
+                case 'timp':
+                timp = inspect(val);
+                break;
+
+                case 'alimentatie':
+                alimentatie = inspect(val);
+                break;
+
+                default:
+                    break;
+            }
+        });
+        
+        busboy.on('file', function(fieldname, file, filename, encoding, mimetype) {
+            var type = mimetype.split('/')[1];
+
+            filePath = '/public/reteteImages/' + crypto.SHA256(new Date().toString()).toString() + `.${type}`;
+        
+            var saveTo = __dirname + filePath;
+            file.pipe(fs.createWriteStream(saveTo));
+        });
+
+        busboy.on('finish', function() {
+            var con = mysql.createConnection({
+                host: "127.0.0.1",
+                user: "root",
+                password: "password",
+                database: 'tw',
+                insecureAuth : true
+            });
+            con.connect();
+
+            var insert = `insert into retete (nume, descriere, ingrediente, post, nivel, timp, alimentatie, image) values (${name}, ${descriere}, ${ingrediente}, ${post}, ${nivel}, ${timp}, ${alimentatie}, '${filePath}');`;
+            
+            con.query(insert, (err, data) => {
+
+                if (data) {
+                    var retetaId = data.insertId;
+
+                    console.log(bolir);
+                    
+
+                    for (let index = 0; index < bolir.length; index++) {
+                        const element = bolir[index];
+                        
+                        var boli = `insert into boliretete (nume, id_reteta) values ('${element}', '${retetaId}');`;
+                        con.query(boli, (err, data) => {
+                            
+                        });
+                    }
+
+                    res.writeHead(200, {
+                        'Content-Type': 'text/plain'
+                    });
+                    res.end('success');
+                }
+            });
+        });
+        req.pipe(busboy);
+    }
+}
+
 http.createServer((req, res) => {
     assets(req, res);
     login(req, res);
@@ -434,6 +743,8 @@ http.createServer((req, res) => {
     despre(req, res);
 
     retete(req, res);
+
+    adauga(req, res);
 
     main(req, res);
 

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Adauga</title>
+
+    <link rel="stylesheet" href="/public/home/main.css">
+    <link rel="stylesheet" href="/public/adauga/main.css">
+</head>
+<body>
+    <div class="header">
+        <img src="/public/home/logo.png" alt="logo">
+    </div>
+
+    <div class="navbar">
+        <a href="/">Acasa</a>
+        <a href="/retete">Rețete</a>
+        <a href="/despre">Despre</a>
+        <a href="/adauga">Adauga reteta</a>
+        <a id="logOut" href="/logout" class="right">Log Out</a>
+        <input type="text" placeholder="Search...">
+    </div>
+
+    <h1>Adauga reteta</h1>
+
+    <form id="form">
+        <div class="form-data">
+                <input type="text" name="nume" id="nume" placeholder="nume reteta">
+            </div>
+            <div class="form-data">
+                <textarea id="descriere" name="descriere" cols="30" rows="10" placeholder="descriere"></textarea>
+            </div>
+            <div class="form-data">
+                <textarea id="ingrediente" name="ingrediente" cols="30" rows="10" placeholder="ingrediente"></textarea>
+            </div>
+            <p>Post</p>
+            <select id="post" name="post" style="margin-bottom: 20px;">
+                <option value="0" selected>Nu</option>
+                <option value="1">Da</option>
+            </select>
+        
+            <p>Nivel</p>
+            <select id="nivel" name="nivel" style="margin-bottom: 20px;">
+                <option value="1" selected>1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+            </select>
+        
+            <div class="form-data">
+                <input type="text" name="timp" id="timp" placeholder="Timp preparare (minute)">
+            </div>
+        
+            <p>Alimentatie</p>
+            <select id="alimentatieReg" name="alimentatie" style="margin-bottom: 20px;">
+                <option value="fara" selected>Fara restrictii</option>
+                <option value="vegetarian">Vegetarian</option>
+                <option value="vegan">Vegan</option>
+            </select>
+        
+            <p>Imagine</p>
+            <div class="form-data">
+                <input type="file" id="file" name="file" placeholder="nume reteta">
+            </div>
+
+            <p>Boli</p>
+            <select id="boli" name="boli[]" style="margin-bottom: 20px;" multiple>
+                <option value="" disabled>Niciuna</option>
+                <option value="diabet"> Diabet</option>
+                <option value="ulcer"> Ulcer</option>
+                <option value="intoleranta_lactoza"> Intoleranta Lactoza</option>
+            </select>
+        
+            <button type="submit" id="adaugaReteta">Adauga</button>
+    </form>
+
+    <script src="/public/adauga/main.js"></script>
+</body>
+</html>
