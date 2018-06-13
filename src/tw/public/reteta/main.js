@@ -1,3 +1,25 @@
+let log = document.getElementById('logOut');
+
+log.onclick = function () {
+    function reqListener() {
+        if (this.response === 'success') {
+            window.location.href = '/';
+        }
+    }
+
+    // get new XHR object
+    var ajax = new XMLHttpRequest();
+
+    // bind our event listener to the "load" event.
+    // "load" is fired when the response to our request is completed and without error.
+    ajax.addEventListener('load', reqListener);
+
+    ajax.open('GET', '/logout');
+
+    // send it off!
+    ajax.send();
+}
+
 // get new XHR object
 var ajax = new XMLHttpRequest();
 
@@ -157,3 +179,65 @@ ajax.open('GET', `/reteta/get/${url}`);
 
 // send it off!
 ajax.send();
+
+var send = document.getElementById('sendComent');
+
+send.onclick = () => {
+    var ajax = new XMLHttpRequest();
+
+    function reqListener2() {
+        if (this.response === 'success') {
+            window.location.href = window.location.href;
+        }
+    }
+
+    // bind our event listener to the "load" event.
+    // "load" is fired when the response to our request is completed and without error.
+    ajax.addEventListener('load', reqListener2);
+
+    var url = window.location.href.split('/')[window.location.href.split('/').length - 1];
+
+    ajax.open('POST', '/addComentariu');
+    var inp =document.getElementById('comentariu').value;
+
+    var data = {
+        postId: url,
+        descriere: inp
+    }
+
+    // send it off!
+    ajax.send(JSON.stringify(data));
+}
+
+var ajax2 = new XMLHttpRequest();
+
+function reqListener2() {
+    var data = JSON.parse(this.response);
+
+    var parent = document.getElementById('contentComentarii');
+
+    for (let index = 0; index < data.length; index++) {
+        const element = data[index];
+        
+        var h4 = document.createElement('h4');
+        h4.innerText = element.email;
+
+        var p = document.createElement('p');
+        p.innerText = element.descriere;
+
+        parent.appendChild(h4);
+        parent.appendChild(p);
+    }
+    
+}
+
+// bind our event listener to the "load" event.
+// "load" is fired when the response to our request is completed and without error.
+ajax2.addEventListener('load', reqListener2);
+
+var url = window.location.href.split('/')[window.location.href.split('/').length - 1];
+
+ajax2.open('GET', `/getComentarii/${url}`);
+
+// send it off!
+ajax2.send();

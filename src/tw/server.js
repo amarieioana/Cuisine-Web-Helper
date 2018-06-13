@@ -86,6 +86,174 @@ let main = (req, res) => {
         }
     }
 
+    if (req.url === '/getMineRetete' && req.method === 'GET') {
+        var cookies = new Cookies(req, res, null);
+        var cookie = cookies.get('userToken');
+
+        if (cookie) {
+            var con = mysql.createConnection({
+                host: "127.0.0.1",
+                user: "root",
+                password: "password",
+                database: 'tw',
+                insecureAuth : true
+            });
+            con.connect();
+
+            var getEmail = `select email from logati where token like '${cookie}';`;
+
+            con.query(getEmail, (err, data) => {
+                if (data.length > 0) {
+                    var email = data[0].email;
+
+                    var userData = `select post, alimentatie from users where email like '${email}';`;
+
+                    con.query(userData, (err, data) => {
+                        if (data.length > 0) {
+                            var alimentatie = data[0].alimentatie;
+                            var post = data[0].post;
+
+                            var getBoliUser = `select nume from boliuser where email like '${email}';`;
+
+                            var boliUser = []; 
+                            var reteteTot = [];
+                            var allRetete = [];
+
+                            con.query(getBoliUser, (err, data) => {
+                                if (data.length > 0) {
+                                    for (let index = 0; index < data.length; index++) {
+                                        const element = data[index];
+                                        
+                                        boliUser.push(element.nume);
+                                    }
+
+                                    var getRetete = `select * from retete where alimentatie like '${alimentatie}' and post like '${post}';`;
+
+                                    con.query(getRetete, (err, data) => {
+                                        if (data.length > 0) {
+
+                                            for (let index = 0; index < data.length; index++) {
+                                                const element = data[index];
+
+                                                allRetete.push({
+                                                    id: element.id,
+                                                    nume: element.nume,
+                                                    image: element.image
+                                                })
+                                                
+                                                var getBoliRetete = `select nume from boliretete where id_reteta like '${element.id}';`;
+
+                                                con.query(getBoliRetete, (err, data) => {
+                                                    if (data.length > 0) {
+                                                        var boliRetete = [];
+                                                        
+                                                        for (let index = 0; index < data.length; index++) {
+                                                            const element = data[index];
+                                                            
+                                                            boliRetete.push(element.nume);
+                                                        }
+
+                                                        var ok = true;
+
+                                                        for (let index = 0; index < boliRetete.length; index++) {
+                                                            const bR = boliRetete[index];
+                                                            
+                                                            for (let index = 0; index < boliUser.length; index++) {
+                                                                const bU = boliUser[index];
+
+                                                                if (bR === bU) {
+                                                                    ok = false;
+                                                                }
+                                                            }
+                                                        }
+                                                        if (ok) {
+                                                            reteteTot.push({
+                                                                id: element.id,
+                                                                nume: element.nume,
+                                                                image: element.image
+                                                            });
+                                                        }
+                                                    }
+                                                });
+                                            }
+                                            
+                                            setTimeout(() => {
+                                               if (reteteTot.length === 0) {
+                                                res.writeHead(200, {
+                                                    'Content-Type': 'text/plain'
+                                                });
+                                                res.end(JSON.stringify({
+                                                    retete: allRetete
+                                                }));
+                                               } else {
+                                                res.writeHead(200, {
+                                                    'Content-Type': 'text/plain'
+                                                });
+                                                res.end(JSON.stringify({
+                                                    retete: reteteTot
+                                                }));
+                                               }
+                                            }, 1000);
+
+                                        }
+                                    });
+                                    
+                                }
+                            });
+                        }
+                    });
+                }
+            });
+        }
+    }
+
+    if (req.url === '/addComentariu' && req.method === 'POST') {
+        req.on('data', data => {
+            var cookies = new Cookies(req, res, null);
+            var cookie = cookies.get('userToken');
+
+            var dataUser = JSON.parse(data);
+    
+            if (cookie) {
+                var con = mysql.createConnection({
+                    host: "127.0.0.1",
+                    user: "root",
+                    password: "password",
+                    database: 'tw',
+                    insecureAuth : true
+                });
+                con.connect();
+    
+                var getEmail = `select email from logati where token like '${cookie}';`;
+
+                con.query(getEmail, (err, data) => {
+                    if (data.length > 0) {
+                        var email = data[0].email;
+
+                        var getId = `select id from users where email like '${email}';`;
+
+                        con.query(getId, (err, data) => {
+                            
+                            if (data.length > 0) {
+                                var insert = `insert into comentarii (id_user, id_reteta, descriere) values ('${data[0].id}', '${dataUser.postId}', '${dataUser.descriere}');`;
+
+                                con.query(insert, (err, data) => {
+                                    if (data) {
+                                        res.writeHead(200, {
+                                            'Content-Type': 'text/plain'
+                                        });
+                                        res.end('success');
+                                    }
+                                });
+                            }
+                        });
+                    }
+                });
+            }
+        });
+
+    }
+
     if (req.url === '/getAllRetete' && req.method === 'GET') {
         var con = mysql.createConnection({
             host: "127.0.0.1",
@@ -145,6 +313,58 @@ let main = (req, res) => {
             });
         }
     }
+
+    var comentarii = new UrlPattern('/getComentarii/:id');
+
+    if (comentarii.match(req.url) && req.method === 'GET') {
+        var postId = comentarii.match(req.url).id;
+
+        var con = mysql.createConnection({
+            host: "127.0.0.1",
+            user: "root",
+            password: "password",
+            database: 'tw',
+            insecureAuth : true
+        });
+        con.connect();
+
+        var getComentarii = `select * from comentarii where id_reteta = ${postId};`;
+
+        con.query(getComentarii, (err, data) => {
+            if (data.length > 0) {
+                var comentarii = [];
+
+                for (let index = 0; index < data.length; index++) {
+                    const comentariu = data[index];
+                    
+                    var user = `select email from users where id = ${comentariu.id_user};`;
+
+                    con.query(user, (err, data) => {
+                        if (data.length > 0) {
+                           var email = data[0].email;
+
+                           var coment = comentariu.descriere;
+                            
+                           comentarii.push({
+                               email: email,
+                               descriere: coment
+                           });
+                           
+                        }
+                    });
+                }
+
+                setTimeout(() => {
+                    res.writeHead(200, {
+                        'Content-Type': 'text/plain'
+                    });
+                    res.end(JSON.stringify(comentarii));
+                }, 1000);
+                
+            }
+        });
+    }
+
 
     var retetaGet = new UrlPattern('/reteta/get/:id');
 
