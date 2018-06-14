@@ -35,7 +35,7 @@ function reqListener() {
     side.classList = 'side';
 
     var h1 = document.createElement('h2');
-    h1.innerText = 'Ingerdiente';
+    h1.innerText = 'Ingrediente';
 
     var pre = document.createElement('pre');
     pre.innerText = data.reteta.ingrediente;
@@ -117,7 +117,7 @@ function reqListener() {
     side.appendChild(p);
 
     h2 = document.createElement('h4');
-    h2.innerText = 'Boli';
+    h2.innerText = 'Neindicata celor cu:';
 
     side.appendChild(h2);
 

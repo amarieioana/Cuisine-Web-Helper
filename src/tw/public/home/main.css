@@ -13,6 +13,26 @@ body {
     text-align: center;
 }
 
+
+.button {
+    background-color: rgb(48, 151, 151);
+    border: none;
+    color: white;
+    padding: 60px 150px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 40px 40px;
+    cursor: pointer;
+    border-radius: 50%;
+}
+
+.button1:hover {
+    background-color: rgb(110, 196, 199);
+    color:rgb(48, 151, 151);;
+}
+
 .header {
     padding: 70px;
     text-align: center;

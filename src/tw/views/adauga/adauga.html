@@ -23,56 +23,80 @@
         <input type="text" placeholder="Search...">
     </div>
 
+    <p style="margin-left: 25px ;padding: 0 7em 3em 0;border-width: 30px; "></p>
+
     <h1>Adauga reteta</h1>
 
     <form id="form">
+         <div class="row">
+            <div class="side">
+                    <div class="form-data  form1">
+                            <textarea id="ingrediente" name="ingrediente" cols="50" rows="20" placeholder="Ingrediente" ></textarea>
+                        </div>
+                    <p><font color="black">Post</font></p>
+                    <select id="post" name="post" style="margin-bottom: 20px;">
+                        <option value="0" selected>Nu</option>
+                        <option value="1">Da</option>
+                    </select>
+                
+                    <p><font color="black">Nivel</font></p>
+                    <select id="nivel" name="nivel" style="margin-bottom: 20px;">
+                        <option value="1" selected>1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                    </select>
+                
+                    <div class="form-data">
+                        <input type="text" name="timp" id="timp" placeholder="Timp preparare (minute)">
+                    </div>
+                
+                    <p><font color="black">Alimentatie</font></p>
+                    <select id="alimentatieReg" name="alimentatie" style="margin-bottom: 20px;">
+                        <option value="fara" selected>Fara restrictii</option>
+                        <option value="vegetarian">Vegetarian</option>
+                        <option value="vegan">Vegan</option>
+                    </select>
+                
+                    
+        
+                    <p><font color="black">Boli</font></p>
+                    <select id="boli" name="boli[]" style="margin-bottom: 20px;" multiple>
+                        <option value="" disabled>Niciuna</option>
+                        <option value="diabet"> Diabet</option>
+                        <option value="ulcer"> Ulcer</option>
+                        <option value="intoleranta_lactoza"> Intoleranta Lactoza</option>
+                    </select>
+                    <button class="button bt1" type="submit" id="adaugaReteta">Adauga</button>
+        
+                </div>
+
+            
+            
+      <div class="main">
+
+            <p style="margin-left: 25px ;padding: 0 7em 3em 0;border-width: 30px; "></p>
+
         <div class="form-data">
-                <input type="text" name="nume" id="nume" placeholder="nume reteta">
-            </div>
-            <div class="form-data">
-                <textarea id="descriere" name="descriere" cols="30" rows="10" placeholder="descriere"></textarea>
-            </div>
-            <div class="form-data">
-                <textarea id="ingrediente" name="ingrediente" cols="30" rows="10" placeholder="ingrediente"></textarea>
-            </div>
-            <p>Post</p>
-            <select id="post" name="post" style="margin-bottom: 20px;">
-                <option value="0" selected>Nu</option>
-                <option value="1">Da</option>
-            </select>
-        
-            <p>Nivel</p>
-            <select id="nivel" name="nivel" style="margin-bottom: 20px;">
-                <option value="1" selected>1</option>
-                <option value="2">2</option>
-                <option value="3">3</option>
-            </select>
-        
-            <div class="form-data">
-                <input type="text" name="timp" id="timp" placeholder="Timp preparare (minute)">
-            </div>
-        
-            <p>Alimentatie</p>
-            <select id="alimentatieReg" name="alimentatie" style="margin-bottom: 20px;">
-                <option value="fara" selected>Fara restrictii</option>
-                <option value="vegetarian">Vegetarian</option>
-                <option value="vegan">Vegan</option>
-            </select>
-        
-            <p>Imagine</p>
-            <div class="form-data">
-                <input type="file" id="file" name="file" placeholder="nume reteta">
+                <input class="input input1" type="text" name="nume" id="nume" placeholder="Nume reteta">
             </div>
 
-            <p>Boli</p>
-            <select id="boli" name="boli[]" style="margin-bottom: 20px;" multiple>
-                <option value="" disabled>Niciuna</option>
-                <option value="diabet"> Diabet</option>
-                <option value="ulcer"> Ulcer</option>
-                <option value="intoleranta_lactoza"> Intoleranta Lactoza</option>
-            </select>
+            <p style="margin-left: 25px ;padding: 0 7em 3em 0;border-width: 30px; "></p>
+
+            <p><font color="black">Imagine</font></p>
+            <div class="form-data ">
+                <input clas="input input1" type="file" id="file" name="file" placeholder="nume reteta">
+            </div>
+
+            <p style="margin-left: 25px ;padding: 0 7em 3em 0;border-width: 30px; "></p>
+
+            <div class="form-data">
+                <textarea class:"stil" id="descriere" name="descriere" cols="100" rows="20" placeholder="Mod de preparare"></textarea>
+            </div>
+            
+            
+        </div>
+    </div>
         
-            <button type="submit" id="adaugaReteta">Adauga</button>
     </form>
 
     <script src="/public/adauga/main.js"></script>

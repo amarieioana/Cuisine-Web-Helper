@@ -34,7 +34,7 @@ let main = (req, res) => {
                 if (err) {
                     throw err;
                 }
-
+                //daca exista un user cu acel email verificam daca e admin sau nu si il ducem pe pagina corespunzatoare
                 if (data.length > 0) {
                     let getadmin = `select * from users where email like '${data[0].email}';`;
                     
@@ -85,7 +85,7 @@ let main = (req, res) => {
             });
         }
     }
-
+// recomandarea retetelor in functie de boala, alimentatie si post
     if (req.url === '/getMineRetete' && req.method === 'GET') {
         var cookies = new Cookies(req, res, null);
         var cookie = cookies.get('userToken');
@@ -206,7 +206,7 @@ let main = (req, res) => {
             });
         }
     }
-
+//insert in tabela comentarii 
     if (req.url === '/addComentariu' && req.method === 'POST') {
         req.on('data', data => {
             var cookies = new Cookies(req, res, null);
@@ -253,7 +253,7 @@ let main = (req, res) => {
         });
 
     }
-
+//admin-ul primeste toate retetele
     if (req.url === '/getAllRetete' && req.method === 'GET') {
         var con = mysql.createConnection({
             host: "127.0.0.1",
@@ -294,6 +294,7 @@ let main = (req, res) => {
         });
     }
 
+//redirectionare spre pagina retetei
     var reteta = new UrlPattern('/reteta/:id');
 
     if (reteta.match(req.url) && req.method === 'GET') {
@@ -313,7 +314,7 @@ let main = (req, res) => {
             });
         }
     }
-
+//comentarii pentru o anumita reteta
     var comentarii = new UrlPattern('/getComentarii/:id');
 
     if (comentarii.match(req.url) && req.method === 'GET') {
@@ -365,7 +366,7 @@ let main = (req, res) => {
         });
     }
 
-
+//toate informatiile pentru pagina unei retete
     var retetaGet = new UrlPattern('/reteta/get/:id');
 
     if (retetaGet.match(req.url) && req.method === 'GET') {
@@ -404,17 +405,17 @@ let main = (req, res) => {
 
                     con.query(boli, (err, data) => {
                         if (data) {
-                            var boliUser = [];
+                            var boliReteta = [];
 
                             for (let index = 0; index < data.length; index++) {
                                 const element = data[index];
                                 
-                                boliUser.push(element.nume);
+                                boliReteta.push(element.nume);
                             }
 
                             var send = {
                                 reteta: dataToSend,
-                                boli: boliUser
+                                boli: boliReteta
                             };
 
                             res.writeHead(200, {
@@ -703,9 +704,9 @@ let register = (req, res) => {
                                 maxAge: 1000 * 60 * 60 * 12
                             });
 
-                            let creteLogati = `insert into logati (token, email) values ('${token}', '${user.email}');`;
+                            let createLogati = `insert into logati (token, email) values ('${token}', '${user.email}');`;
                             
-                            con.query(creteLogati, (err, data) => {
+                            con.query(createLogati, (err, data) => {
                                 if (err) {
                                     throw err;
                                 }
@@ -852,7 +853,7 @@ let adauga = function (req, res) {
             });
         }
     }
-
+//adauga reteta in baza de date
     if (req.url === '/adauga' && req.method === 'POST') {
         var busboy = new Busboy({ headers: req.headers });
 
@@ -931,10 +932,7 @@ let adauga = function (req, res) {
 
                 if (data) {
                     var retetaId = data.insertId;
-
-                    console.log(bolir);
                     
-
                     for (let index = 0; index < bolir.length; index++) {
                         const element = bolir[index];
                         

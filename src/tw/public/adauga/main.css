@@ -1,3 +1,52 @@
 body {
     color: white;
 }
+.input.input1 {
+    width: 300px;
+    height: 100px;
+  }
+
+ 
+  .row {
+    display: flex;
+    padding: 50px;
+    padding-left:150px;
+    padding-right: 150px;
+}
+
+/* Create two unequal columns that sits next to each other */
+/* Sidebar/left column */
+.side {
+    flex: 200px;
+    background-color: blanchedalmond;
+    padding: 20px;
+}
+
+/* Main column */
+.main {
+    flex: 600px;
+    background-color: white;
+    padding: 20px;
+
+}
+
+.button {
+    background-color: rgb(48, 151, 151);
+    border: none;
+    color: white;
+    padding: 50px 100px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 20px 20px;
+    cursor: pointer;
+    border-radius: 50%;
+}
+
+::placeholder {
+
+   color:black;
+}
+
+
