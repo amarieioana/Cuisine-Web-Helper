@@ -41,7 +41,7 @@ log.onclick = function () {
     // send it off!
     ajax.send();
 }
-
+//afisare retete pagina home admin
 function reqListener() {
     var data = JSON.parse(this.response);
 

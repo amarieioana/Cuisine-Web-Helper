@@ -22,7 +22,7 @@ log.onclick = function () {
 
 // get new XHR object
 var ajax = new XMLHttpRequest();
-
+//afisare reteta
 function reqListener() {
     var data = JSON.parse(this.response);
 
@@ -181,7 +181,7 @@ ajax.open('GET', `/reteta/get/${url}`);
 ajax.send();
 
 var send = document.getElementById('sendComent');
-
+//adauga comentariu
 send.onclick = () => {
     var ajax = new XMLHttpRequest();
 
@@ -210,7 +210,7 @@ send.onclick = () => {
 }
 
 var ajax2 = new XMLHttpRequest();
-
+//afisare comentarii existente
 function reqListener2() {
     var data = JSON.parse(this.response);
 

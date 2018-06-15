@@ -14,6 +14,7 @@ var inspect = require('util').inspect;
 var UrlPattern = require('url-pattern');
 
 let main = (req, res) => {
+//verificare cookie si redirectionare spre pagina home corespunzatoare
     if (req.url === '/' && req.method === 'GET') {
         var cookies = new Cookies(req, res, null);
         var cookie = cookies.get('userToken');
@@ -565,9 +566,9 @@ let login = (req, res) => {
                         maxAge: 1000 * 60 * 60 * 12
                     });
 
-                    let creteLogati = `insert into logati (token, email) values ('${token}', '${user.email}');`;
+                    let createLogati = `insert into logati (token, email) values ('${token}', '${user.email}');`;
 
-                    con.query(creteLogati, (err, data) => {
+                    con.query(createLogati, (err, data) => {
                         if (err) {
                             throw err;
                         }
@@ -787,7 +788,7 @@ let despre = (req, res) => {
         }
     }
 }
-
+//redirectionare pagina retete
 let retete = function (req, res) {
     if (req.url === '/retete' && req.method === 'GET') {
         fs.readFile(__dirname + '/views/retete/retete.html', 'utf8', function (err, text) {
@@ -802,7 +803,7 @@ let retete = function (req, res) {
         });
     }
 }
-
+//intai redirectionare spre pagina de adaugare reteta, apoi adaugarea efectiva 
 let adauga = function (req, res) {
     if (req.url === '/adauga' && req.method === 'GET') {
         var cookies = new Cookies(req, res, null);

@@ -19,7 +19,7 @@ log.onclick = function () {
     // send it off!
     ajax.send();
 }
-
+//afisare galerie retete
 function reqListener() {
     var data = JSON.parse(this.response);
 
